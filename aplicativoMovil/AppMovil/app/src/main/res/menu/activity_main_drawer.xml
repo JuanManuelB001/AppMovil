@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home_black_24dp"
+            android:title="@string/menu_home" />
+        <item
+            android:id="@+id/nav_mapa"
+            android:icon="@drawable/ic_map_24"
+            android:title="@string/hint_mapa" />
+        <item
+            android:id="@+id/agregar_amigo"
+            android:icon="@drawable/ic_group_add_24"
+            android:title="@string/hint_agregar_amigo" />
+        <item
+            android:id="@+id/nav_esp_32"
+            android:icon="@drawable/ic_offline_share_24"
+            android:title="@string/hint_eps_32" />
+    </group>
+    <item
+        android:id="@+id/nav_cerrar_sesion"
+        android:icon="@drawable/ic_logout_24"
+        android:title="@string/hint_cerrar_sesion"
+        />
+</menu>
