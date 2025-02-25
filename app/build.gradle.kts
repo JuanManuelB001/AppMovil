@@ -70,8 +70,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    
     //FIREBASAE FIREBABASE CLOUD MESSASING(FCM)
     implementation ("com.squareup.okhttp3:okhttp:4.10.0")
     implementation ("com.google.firebase:firebase-messaging:23.0.0")
+    //IMPLEMENTACIONES TEST
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.0")
+    androidTestImplementation ("androidx.test.ext:junit:1.1.3")
 }
