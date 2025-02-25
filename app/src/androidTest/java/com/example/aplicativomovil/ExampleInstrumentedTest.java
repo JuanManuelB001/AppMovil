@@ -35,7 +35,7 @@ public class ExampleInstrumentedTest {
         assertEquals("com.example.aplicativomovil", appContext.getPackageName());
     }
     @Test
-    public void isVisibleLayout(){
+    public void isVisibleNavigationDrawerLayout(){
 
         try(ActivityScenario<NavigationDrawerActivity> scenario = ActivityScenario.launch(NavigationDrawerActivity.class)){
 
