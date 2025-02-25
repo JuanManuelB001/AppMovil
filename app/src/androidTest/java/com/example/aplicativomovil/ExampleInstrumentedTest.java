@@ -1,6 +1,7 @@
 package com.example.aplicativomovil;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
@@ -36,9 +37,16 @@ public class ExampleInstrumentedTest {
     @Test
     public void isVisibleLayout(){
 
-        try(ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)){
+        try(ActivityScenario<NavigationDrawerActivity> scenario = ActivityScenario.launch(NavigationDrawerActivity.class)){
 
             onView(withId(R.id.drawer_layout))
+                    .check(matches(isDisplayed()));
+        }
+    }
+    @Test
+    public void isVisibleMapLayout(){
+        try(ActivityScenario<MapsActivity> scenario = ActivityScenario.launch(MapsActivity.class)){
+            onView(withId(R.id.map))
                     .check(matches(isDisplayed()));
         }
     }
