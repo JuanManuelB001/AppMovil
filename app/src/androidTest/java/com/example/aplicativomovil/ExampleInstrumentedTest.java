@@ -28,6 +28,9 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
  */
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
+    /*
+        COMPROBANDO EL ESTADO DE LOS LAYOUT DEL PROYECTO
+     */
     @Test
     public void useAppContext() {
         // Context of the app under test.
@@ -50,14 +53,29 @@ public class ExampleInstrumentedTest {
                     .check(matches(isDisplayed()));
         }
     }
-    
+
     @Test
-    public void isVisibleIniciarSesion(){
+    public void isVisibleIniciarSesionLayout(){
         try(ActivityScenario<IniciarSesionActivity> scenario = ActivityScenario.launch(IniciarSesionActivity.class)){
             onView(withId(R.id.iniciarSesion_layout))
                     .check(matches(isDisplayed()));
         }
     }
+    @Test
+    public void isVisibleRegistrarseLayout(){
+        try(ActivityScenario<registrarse> scenario = ActivityScenario.launch(registrarse.class)){
+            onView(withId(R.id.registrarse_layout))
+                    .check(matches(isDisplayed()));
+        }
+    }
+    @Test
+    public void isVisibleBluetoothLayout(){
+        try(ActivityScenario<bluetoothConexion> scenario = ActivityScenario.launch(bluetoothConexion.class)){
+            onView(withId(R.id.bluetooth_layout))
+                    .check(matches(isDisplayed()));
+        }
+    }
+
 
 
 }
