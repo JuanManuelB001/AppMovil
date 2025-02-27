@@ -39,7 +39,7 @@ public class IniciarSesionActivity extends AppCompatActivity implements View.OnC
         setContentView(R.layout.activity_iniciar_sesion);
 
         // Establecer padding para los system bars
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.iniciarSesion_layout), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;

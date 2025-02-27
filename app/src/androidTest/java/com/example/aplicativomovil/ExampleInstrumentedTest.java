@@ -50,6 +50,14 @@ public class ExampleInstrumentedTest {
                     .check(matches(isDisplayed()));
         }
     }
+    
+    @Test
+    public void isVisibleIniciarSesion(){
+        try(ActivityScenario<IniciarSesionActivity> scenario = ActivityScenario.launch(IniciarSesionActivity.class)){
+            onView(withId(R.id.iniciarSesion_layout))
+                    .check(matches(isDisplayed()));
+        }
+    }
 
 
 }
