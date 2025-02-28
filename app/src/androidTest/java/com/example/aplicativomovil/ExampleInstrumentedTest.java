@@ -75,6 +75,12 @@ public class ExampleInstrumentedTest {
                     .check(matches(isDisplayed()));
         }
     }
+    /*
+    Navigation Drawer
+    Restaurar contrasena
+    Mensajes
+    Main
+     */
 
 
 
