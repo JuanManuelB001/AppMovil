@@ -186,7 +186,7 @@ public class registrarse extends AppCompatActivity implements View.OnClickListen
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(registrarse.this, "Ha ocurrido un error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(registrarse.this, "Error: Correo en Uso", Toast.LENGTH_LONG).show();
                         btnGuardar.setEnabled(true);
                     }
                 });

@@ -80,6 +80,8 @@ public class ExampleInstrumentedTest {
     Restaurar contrasena
     Mensajes
     Main
+    app_nar_layout
+
      */
 
 
