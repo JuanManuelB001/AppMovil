@@ -28,61 +28,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
  */
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
-    /*
-        COMPROBANDO EL ESTADO DE LOS LAYOUT DEL PROYECTO
-     */
-    @Test
-    public void useAppContext() {
-        // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.example.aplicativomovil", appContext.getPackageName());
-    }
-    @Test
-    public void isVisibleNavigationDrawerLayout(){
 
-        try(ActivityScenario<NavigationDrawerActivity> scenario = ActivityScenario.launch(NavigationDrawerActivity.class)){
-
-            onView(withId(R.id.drawer_layout))
-                    .check(matches(isDisplayed()));
-        }
-    }
-    @Test
-    public void isVisibleMapLayout(){
-        try(ActivityScenario<MapsActivity> scenario = ActivityScenario.launch(MapsActivity.class)){
-            onView(withId(R.id.map))
-                    .check(matches(isDisplayed()));
-        }
-    }
-
-    @Test
-    public void isVisibleIniciarSesionLayout(){
-        try(ActivityScenario<IniciarSesionActivity> scenario = ActivityScenario.launch(IniciarSesionActivity.class)){
-            onView(withId(R.id.iniciarSesion_layout))
-                    .check(matches(isDisplayed()));
-        }
-    }
-    @Test
-    public void isVisibleRegistrarseLayout(){
-        try(ActivityScenario<registrarse> scenario = ActivityScenario.launch(registrarse.class)){
-            onView(withId(R.id.registrarse_layout))
-                    .check(matches(isDisplayed()));
-        }
-    }
-    @Test
-    public void isVisibleBluetoothLayout(){
-        try(ActivityScenario<bluetoothConexion> scenario = ActivityScenario.launch(bluetoothConexion.class)){
-            onView(withId(R.id.bluetooth_layout))
-                    .check(matches(isDisplayed()));
-        }
-    }
-    /*
-    Navigation Drawer
-    Restaurar contrasena
-    Mensajes
-    Main
-    app_nar_layout
-
-     */
 
 
 

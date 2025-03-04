@@ -13,19 +13,19 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="IniciarSesionTest">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="RegistrarseTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="testRegistrarseFailure()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="testRegistrarseSuccess()">
+      <SelectionState runConfigName="testIniciarSesion()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="testIniciarSesion()">
+      <SelectionState runConfigName="isVisiblelayout">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="isVisibleBluetoothLayout()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
