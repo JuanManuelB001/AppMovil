@@ -29,7 +29,4 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
 
-
-
-
 }

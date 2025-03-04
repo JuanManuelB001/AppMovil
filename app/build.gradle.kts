@@ -31,8 +31,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11  // O VERSION_17, dependiendo de tu preferencia
+        targetCompatibility = JavaVersion.VERSION_11  // O VERSION_17, dependiendo de tu preferencia
     }
     buildFeatures {
         viewBinding = true
