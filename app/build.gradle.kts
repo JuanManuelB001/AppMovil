@@ -77,5 +77,11 @@ dependencies {
     androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.0")
     androidTestImplementation ("androidx.test.ext:junit:1.1.3")
     androidTestImplementation ("androidx.test:rules:1.5.0")
+    // Para pruebas unitarias con Mockito
+    testImplementation ("org.mockito:mockito-core:4.8.0" )// Última versión disponible de Mockito
+    // Para pruebas instrumentadas en Android con Mockito
+    androidTestImplementation ("org.mockito:mockito-android:4.8.0") // Si haces pruebas instrumentadas
+    // Dependencia de JUnit (asegúrate de tenerla también)
+    testImplementation ("junit:junit:4.13.2")  // Para pruebas unitarias
 
 }

@@ -16,8 +16,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
-import static org.junit.Assert.*;
 
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 
@@ -28,5 +28,10 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
  */
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
+    @Test
+    public void TestMockito(){
+        // Crear un mock de la clase que vamos a simular
+        MainActivity miClaseMock = Mockito.mock(MainActivity.class);
+    }
 
 }
