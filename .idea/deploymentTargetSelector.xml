@@ -13,16 +13,13 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="isVisibleRegistrarseLayout()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="isVisiblelayout">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="MainActivityTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="isVisibleNavigationDrawerLayout()">
+      <SelectionState runConfigName="isVisibleBluetoothLayout()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testRegistrarseFailure()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

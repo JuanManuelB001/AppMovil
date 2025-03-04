@@ -32,8 +32,8 @@ public class EnviarMensajeActivity extends AppCompatActivity {
     private RecyclerView rvMensajesContactos;
     private MensajesAdapter mensajesAdapter;
 
-    private FirebaseFirestore db;
-    private FirebaseAuth mAuth;
+    public FirebaseFirestore db;
+    public FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private List<String> contactosCorreos;
     private List<String> contactosIds;
