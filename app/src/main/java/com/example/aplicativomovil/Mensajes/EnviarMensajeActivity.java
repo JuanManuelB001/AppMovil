@@ -30,13 +30,13 @@ public class EnviarMensajeActivity extends AppCompatActivity {
     private EditText editTextMensaje;
     private Button buttonEnviar;
     private RecyclerView rvMensajesContactos;
-    private MensajesAdapter mensajesAdapter;
+    public MensajesAdapter mensajesAdapter;
 
     public FirebaseFirestore db;
     public FirebaseAuth mAuth;
-    private FirebaseUser currentUser;
-    private List<String> contactosCorreos;
-    private List<String> contactosIds;
+    public FirebaseUser currentUser;
+    public List<String> contactosCorreos;
+    public List<String> contactosIds;
     private List<Mensaje> mensajesList;
     private String correoUsuario;
 
@@ -54,6 +54,8 @@ public class EnviarMensajeActivity extends AppCompatActivity {
             Toast.makeText(this, "Usuario no autenticado.", Toast.LENGTH_SHORT).show();
             finish();
             return;
+        }else{
+            Toast.makeText(this, "usuario Activo", Toast.LENGTH_SHORT).show();
         }
 
         // Obtener correo del usuario actual

@@ -83,5 +83,6 @@ dependencies {
     androidTestImplementation ("org.mockito:mockito-android:4.8.0") // Si haces pruebas instrumentadas
     // Dependencia de JUnit (asegúrate de tenerla también)
     testImplementation ("junit:junit:4.13.2")  // Para pruebas unitarias
-
+    androidTestImplementation ("io.mockk:mockk-android:1.12.0") // PRUEBAS MOCKK
+    testImplementation ("io.mockk:mockk:1.12.0")
 }

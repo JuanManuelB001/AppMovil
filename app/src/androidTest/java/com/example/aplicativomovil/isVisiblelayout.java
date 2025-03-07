@@ -57,6 +57,7 @@ public class isVisiblelayout {
                     .check(matches(isDisplayed()));
         }
     }
+
     @Test
     public void isVisibleBluetoothLayout(){
         try(ActivityScenario<bluetoothConexion> scenario = ActivityScenario.launch(bluetoothConexion.class)){
