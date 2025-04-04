@@ -23,23 +23,32 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Actividad para enviar mensajes a contactos registrados y visualizar los mensajes recibidos.
+ * Utiliza Firebase Authentication y Firestore para gestionar los datos.
+ */
 public class EnviarMensajeActivity extends AppCompatActivity {
 
     private Spinner spinnerContactos;
     private EditText editTextMensaje;
     private Button buttonEnviar;
     private RecyclerView rvMensajesContactos;
-    public MensajesAdapter mensajesAdapter;
 
+    public MensajesAdapter mensajesAdapter;
     public FirebaseFirestore db;
     public FirebaseAuth mAuth;
     public FirebaseUser currentUser;
+
     public List<String> contactosCorreos;
     public List<String> contactosIds;
     private List<Mensaje> mensajesList;
+
     private String correoUsuario;
 
+    /**
+     * Método que se ejecuta al iniciar la actividad.
+     * Inicializa vistas, Firebase, carga contactos y mensajes.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +63,7 @@ public class EnviarMensajeActivity extends AppCompatActivity {
             Toast.makeText(this, "Usuario no autenticado.", Toast.LENGTH_SHORT).show();
             finish();
             return;
-        }else{
+        } else {
             Toast.makeText(this, "usuario Activo", Toast.LENGTH_SHORT).show();
         }
 
@@ -62,29 +71,31 @@ public class EnviarMensajeActivity extends AppCompatActivity {
         Email email = new Email(this);
         correoUsuario = email.getEmail(currentUser);
 
-        // Inicializar vistas
+        // Inicializar vistas y listas
         rvMensajesContactos = findViewById(R.id.rvMensajesContactos);
         mensajesList = new ArrayList<>();
         mensajesAdapter = new MensajesAdapter(mensajesList);
-
         rvMensajesContactos.setLayoutManager(new LinearLayoutManager(this));
         rvMensajesContactos.setAdapter(mensajesAdapter);
 
         spinnerContactos = findViewById(R.id.spinnerContactos);
         editTextMensaje = findViewById(R.id.editTextMensaje);
         buttonEnviar = findViewById(R.id.buttonEnviar);
-
         contactosCorreos = new ArrayList<>();
         contactosIds = new ArrayList<>();
 
-        // Cargar contactos y mensajes
+        // Cargar contactos del usuario y sus mensajes recibidos
         cargarContactos();
         mirarMensajesDeContacto(db, correoUsuario);
 
-        // Configurar botón de envío
+        // Enviar mensaje al presionar botón
         buttonEnviar.setOnClickListener(v -> enviarMensaje());
     }
 
+    /**
+     * Carga los contactos del usuario actual desde Firestore.
+     * Llena el spinner con los correos electrónicos de los amigos.
+     */
     private void cargarContactos() {
         db.collection("Usuarios")
                 .document(currentUser.getUid())
@@ -111,6 +122,12 @@ public class EnviarMensajeActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Consulta y muestra los mensajes recibidos por el usuario actual desde Firestore.
+     *
+     * @param db               Instancia de FirebaseFirestore.
+     * @param correoContacto   Correo electrónico del usuario actual.
+     */
     private void mirarMensajesDeContacto(FirebaseFirestore db, String correoContacto) {
         db.collection("Usuarios")
                 .whereEqualTo("Correo Electronico", correoContacto)
@@ -129,12 +146,16 @@ public class EnviarMensajeActivity extends AppCompatActivity {
                                     }
                                     mensajesAdapter.notifyDataSetChanged();
                                 })
-                                .addOnFailureListener(e -> Log.e(TAG, "Error al consultar mensajes", e));
+                                .addOnFailureListener(e -> Log.e("EnviarMensaje", "Error al consultar mensajes", e));
                     }
                 })
-                .addOnFailureListener(e -> Log.e(TAG, "Error al consultar contacto", e));
+                .addOnFailureListener(e -> Log.e("EnviarMensaje", "Error al consultar contacto", e));
     }
 
+    /**
+     * Envía un mensaje al contacto seleccionado desde el spinner.
+     * Crea una entrada en la colección "mensajes_recibidos" del destinatario.
+     */
     private void enviarMensaje() {
         String correoAmigo = spinnerContactos.getSelectedItem().toString().trim();
         String mensajeTexto = editTextMensaje.getText().toString().trim();
@@ -161,7 +182,7 @@ public class EnviarMensajeActivity extends AppCompatActivity {
                                 })
                                 .addOnFailureListener(e -> {
                                     Toast.makeText(this, "Error al enviar mensaje.", Toast.LENGTH_SHORT).show();
-                                    Log.e(TAG, "Error al enviar mensaje", e);
+                                    Log.e("EnviarMensaje", "Error al enviar mensaje", e);
                                 });
                     } else {
                         Toast.makeText(this, "Amigo no encontrado.", Toast.LENGTH_SHORT).show();
@@ -169,3 +190,4 @@ public class EnviarMensajeActivity extends AppCompatActivity {
                 });
     }
 }
+
