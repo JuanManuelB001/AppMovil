@@ -21,7 +21,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * Actividad que permite al usuario ver y añadir contactos de emergencia
+ * desde Firebase Firestore. Utiliza un RecyclerView para mostrar los amigos añadidos
+ * y un Spinner para seleccionar nuevos contactos.
+ */
 public class listacontactos extends AppCompatActivity {
 
     private Spinner idContactoRegist;
@@ -33,6 +37,11 @@ public class listacontactos extends AppCompatActivity {
     private AmigosAdapter amigosAdapter;
     private List<String> amigosList;
 
+    /**
+     * Método llamado al crear la actividad. Inicializa Firebase, vistas y eventos.
+     *
+     * @param savedInstanceState Estado guardado de la actividad (si existe).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,20 +64,24 @@ public class listacontactos extends AppCompatActivity {
         idBtnAñadir = findViewById(R.id.IdBtnAñadir);
         recClearview = findViewById(R.id.recClearview);
 
-        // Inicializar lista y adaptador
+        // Inicializar lista y adaptador del RecyclerView
         amigosList = new ArrayList<>();
         amigosAdapter = new AmigosAdapter(amigosList);
         recClearview.setLayoutManager(new LinearLayoutManager(this));
         recClearview.setAdapter(amigosAdapter);
 
-        // Configurar listeners
+        // Configurar listeners de botones
         idBtnVerContacto.setOnClickListener(v -> listarContactos());
         idBtnAñadir.setOnClickListener(v -> añadirContacto());
 
-        // Listar los contactos al iniciar la actividad
+        // Listar contactos al iniciar la actividad
         listarContactos();
     }
 
+    /**
+     * Consulta la colección "Usuarios" en Firestore para listar todos los contactos disponibles,
+     * excluyendo al usuario actual. Los muestra en el Spinner.
+     */
     private void listarContactos() {
         db.collection("Usuarios").get()
                 .addOnCompleteListener(task -> {
@@ -77,11 +90,11 @@ public class listacontactos extends AppCompatActivity {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String correo = document.getString("Correo Electronico");
                             if (correo != null && !correo.equals(currentUser.getEmail())) {
-                                correos.add(correo); // Excluir el correo del usuario actual
+                                correos.add(correo); // Excluir al usuario actual
                             }
                         }
 
-                        // Configurar el Spinner con los correos obtenidos
+                        // Llenar el Spinner con los correos obtenidos
                         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, correos);
                         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         idContactoRegist.setAdapter(adapter);
@@ -93,6 +106,10 @@ public class listacontactos extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Añade el contacto seleccionado en el Spinner a la lista de amigos del usuario
+     * autenticado, guardándolo en la subcolección "amigos" en Firestore.
+     */
     private void añadirContacto() {
         String correoSeleccionado = idContactoRegist.getSelectedItem().toString().trim();
 
@@ -106,18 +123,18 @@ public class listacontactos extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && !task.getResult().isEmpty()) {
                         QueryDocumentSnapshot document = (QueryDocumentSnapshot) task.getResult().getDocuments().get(0);
-                        String idAmigo = document.getId(); // Obtener el ID del amigo
-                        String nombreAmigo = document.getString("Nombre"); // Obtener el nombre del amigo
-                        String telefonoAmigo = document.getString("Telefono"); // Obtener el número de teléfono del amigo
+                        String idAmigo = document.getId(); // ID único del amigo
+                        String nombreAmigo = document.getString("Nombre");
+                        String telefonoAmigo = document.getString("Telefono");
 
-                        // Crear un mapa con los datos del amigo
+                        // Crear mapa con los datos del contacto
                         Map<String, Object> amigo = new HashMap<>();
                         amigo.put("amigoId", idAmigo);
                         amigo.put("correo", correoSeleccionado);
                         amigo.put("nombre", nombreAmigo);
                         amigo.put("telefono", telefonoAmigo);
 
-                        // Guardar en la subcolección "amigos" del usuario actual
+                        // Guardar en Firestore en la subcolección "amigos" del usuario actual
                         db.collection("Usuarios")
                                 .document(currentUser.getUid())
                                 .collection("amigos")
@@ -125,7 +142,7 @@ public class listacontactos extends AppCompatActivity {
                                 .set(amigo)
                                 .addOnSuccessListener(aVoid -> {
                                     Toast.makeText(this, "Contacto añadido como amigo.", Toast.LENGTH_SHORT).show();
-                                    listarAmigos(); // Refrescar la lista de amigos
+                                    listarAmigos(); // Actualizar lista
                                 })
                                 .addOnFailureListener(e -> {
                                     Toast.makeText(this, "Error al añadir contacto.", Toast.LENGTH_SHORT).show();
@@ -136,6 +153,10 @@ public class listacontactos extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Consulta y muestra la lista de amigos guardados en la subcolección "amigos"
+     * del usuario actual, actualizando el RecyclerView.
+     */
     private void listarAmigos() {
         db.collection("Usuarios")
                 .document(currentUser.getUid())
@@ -143,21 +164,21 @@ public class listacontactos extends AppCompatActivity {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        amigosList.clear(); // Limpiar la lista actual
+                        amigosList.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String nombre = document.getString("nombre");
                             String telefono = document.getString("telefono");
                             String correo = document.getString("correo");
                             if (nombre != null && telefono != null && correo != null) {
-                                // Mostrar nombre, correo y teléfono en la lista
                                 amigosList.add(nombre + " (" + correo + ") - Tel: " + telefono);
                             }
                         }
 
-                        amigosAdapter.notifyDataSetChanged(); // Notificar al adaptador que los datos han cambiado
+                        amigosAdapter.notifyDataSetChanged(); // Actualizar RecyclerView
                     } else {
                         Toast.makeText(this, "Error al listar amigos.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 }
+

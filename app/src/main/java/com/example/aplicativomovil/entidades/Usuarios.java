@@ -1,44 +1,99 @@
 package com.example.aplicativomovil.entidades;
 
+/**
+ * Clase que representa un usuario del sistema con nombre, teléfono y correo electrónico.
+ * Utilizada para almacenar y transferir información del usuario, por ejemplo con Firebase.
+ */
 public class Usuarios {
-    private String nombre,telefono, email;
 
-    public Usuarios(String nombre, String telefono, String email){
+    /** Nombre del usuario */
+    private String nombre;
+
+    /** Número de teléfono del usuario */
+    private String telefono;
+
+    /** Correo electrónico del usuario */
+    private String email;
+
+    /**
+     * Constructor que inicializa todos los campos del usuario.
+     *
+     * @param nombre   Nombre del usuario.
+     * @param telefono Teléfono del usuario.
+     * @param email    Correo electrónico del usuario.
+     */
+    public Usuarios(String nombre, String telefono, String email) {
         this.nombre = nombre;
         this.telefono = telefono;
         this.email = email;
-
-    }
-    //CONSTRUCTOR VACIO
-    public Usuarios(){
-
     }
 
-    //METODOS GETTERS Y SETTERS
+    /**
+     * Constructor vacío requerido para ciertas operaciones como la deserialización con Firebase.
+     */
+    public Usuarios() {
+        // Constructor vacío
+    }
 
-    //METODOS GETTERS
-    public String getNombre(){
+    // ============================
+    // Métodos Getter
+    // ============================
+
+    /**
+     * Obtiene el nombre del usuario.
+     *
+     * @return Nombre del usuario.
+     */
+    public String getNombre() {
         return nombre;
     }
 
-    public String getTelefono(){
+    /**
+     * Obtiene el número de teléfono del usuario.
+     *
+     * @return Teléfono del usuario.
+     */
+    public String getTelefono() {
         return telefono;
     }
-    public String getEmail(){
+
+    /**
+     * Obtiene el correo electrónico del usuario.
+     *
+     * @return Email del usuario.
+     */
+    public String getEmail() {
         return email;
     }
 
-    //METODOS SETTERES
-    public void setNombre(String nombre){
+    // ============================
+    // Métodos Setter
+    // ============================
+
+    /**
+     * Establece el nombre del usuario.
+     *
+     * @param nombre Nombre a asignar.
+     */
+    public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-    public void setTelefono(String telefono){
+
+    /**
+     * Establece el número de teléfono del usuario.
+     *
+     * @param telefono Teléfono a asignar.
+     */
+    public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
-    public void setEmail(String email){
+
+    /**
+     * Establece el correo electrónico del usuario.
+     *
+     * @param email Email a asignar.
+     */
+    public void setEmail(String email) {
         this.email = email;
     }
-
-
-
 }
