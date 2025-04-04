@@ -37,31 +37,38 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+// Clase principal que maneja la conexión Bluetooth con un ESP32 y el envío de mensajes de alerta a contactos mediante Firebase
 public class bluetoothConexion extends AppCompatActivity {
-    // Variables principales
-    private static final String TAG = "BluetoothConexion";
-    private static final UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    private static final int REQUEST_BLUETOOTH_CONNECT_PERMISSION = 100;
+
+    // Constantes y variables principales
+    private static final String TAG = "BluetoothConexion"; // Tag para logs
+    private static final UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // UUID estándar para comunicación Bluetooth SPP
+    private static final int REQUEST_BLUETOOTH_CONNECT_PERMISSION = 100; // Código de solicitud de permisos
+
+    // Bluetooth
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothSocket bluetoothSocket;
     private BluetoothDevice dispositivoSeleccionado;
-    private ConnectedThread conexionBluetooth;
+    private ConnectedThread conexionBluetooth; // Hilo para comunicación Bluetooth
 
-    // Componentes UI
+    // Componentes de interfaz de usuario
     private Button btnBuscar, btnConectar, btnDesconectar;
     private Spinner spinnerDispositivos;
     private ArrayAdapter<String> dispositivoAdapter;
     private final ArrayList<String> dispositivosEncontrados = new ArrayList<>();
+
+    // Firebase
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private List<String> contactosCorreos;
     private List<String> contactosIds;
     private String correoUsuario;
-    private boolean mensajeEnviado = false; // Variable global
 
+    // Control de alertas
+    private boolean mensajeEnviado = false;
 
-    // Lanzador para solicitar permisos de Bluetooth
+    // Permite manejar el resultado al solicitar activar el Bluetooth
     private final ActivityResultLauncher<Intent> enableBluetoothLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> Log.d(TAG, "Bluetooth habilitado por el usuario.")
@@ -71,27 +78,32 @@ public class bluetoothConexion extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_dashboard);
-        inicializarUI();
-        inicializarBluetooth();
 
+        inicializarUI();            // Inicializa botones y spinner
+        inicializarBluetooth();    // Verifica y solicita activar el Bluetooth
+
+        // Inicializa Firebase
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
+        // Verifica si hay sesión activa
         if (currentUser == null) {
             Toast.makeText(this, "Usuario no autenticado.", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
+        // Obtiene el correo electrónico del usuario autenticado
         Email email = new Email(this);
         correoUsuario = email.getEmail(currentUser);
 
+        // Inicializa listas de contactos
         contactosCorreos = new ArrayList<>();
         contactosIds = new ArrayList<>();
-
     }
 
+    // Inicializa componentes de la UI y sus eventos
     private void inicializarUI() {
         btnBuscar = findViewById(R.id.idBtnVerContacto);
         btnConectar = findViewById(R.id.IdBtnAñadir);
@@ -102,12 +114,13 @@ public class bluetoothConexion extends AppCompatActivity {
         dispositivoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDispositivos.setAdapter(dispositivoAdapter);
 
-        // Configuración de listeners
+        // Eventos de botones
         btnBuscar.setOnClickListener(v -> buscarDispositivos());
         btnConectar.setOnClickListener(v -> conectarDispositivo());
         btnDesconectar.setOnClickListener(v -> desconectarDispositivo());
     }
 
+    // Verifica disponibilidad de Bluetooth y solicita activarlo si está apagado
     private void inicializarBluetooth() {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
@@ -121,27 +134,21 @@ public class bluetoothConexion extends AppCompatActivity {
         }
     }
 
+    // Busca dispositivos Bluetooth emparejados
     private void buscarDispositivos() {
         if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
             mostrarToast("Bluetooth no habilitado.");
             return;
         }
 
-        // Verificar si el permiso está concedido
+        // Verifica permisos
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            // Solicitar el permiso
-            ActivityCompat.requestPermissions(
-                    this,
-                    new String[]{Manifest.permission.BLUETOOTH_CONNECT},
-                    REQUEST_BLUETOOTH_CONNECT_PERMISSION
-            );
-            return; // Salir del método mientras se espera el permiso
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, REQUEST_BLUETOOTH_CONNECT_PERMISSION);
+            return;
         }
 
-        // Limpiar la lista de dispositivos encontrados
-        dispositivosEncontrados.clear();
+        dispositivosEncontrados.clear(); // Limpia lista previa
 
-        // Obtener dispositivos emparejados
         Set<BluetoothDevice> dispositivosVinculados = bluetoothAdapter.getBondedDevices();
         if (dispositivosVinculados.size() > 0) {
             for (BluetoothDevice dispositivo : dispositivosVinculados) {
@@ -152,7 +159,7 @@ public class bluetoothConexion extends AppCompatActivity {
             mostrarToast("No se encontraron dispositivos emparejados.");
         }
 
-        // Configurar la selección en el spinner
+        // Asigna el dispositivo seleccionado al spinner
         spinnerDispositivos.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -162,25 +169,18 @@ public class bluetoothConexion extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                dispositivoSeleccionado = null; // No se seleccionó ningún dispositivo
+                dispositivoSeleccionado = null;
             }
         });
     }
 
+    // Devuelve el dispositivo Bluetooth emparejado con el nombre proporcionado
     private BluetoothDevice obtenerDispositivoPorNombre(String nombre) {
-        // Verificar si el permiso está concedido
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            // Solicitar el permiso al usuario
-            ActivityCompat.requestPermissions(
-                    this,
-                    new String[]{Manifest.permission.BLUETOOTH_CONNECT},
-                    REQUEST_BLUETOOTH_CONNECT_PERMISSION
-            );
-            // Retornar null mientras se espera que el usuario conceda el permiso
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, REQUEST_BLUETOOTH_CONNECT_PERMISSION);
             return null;
         }
 
-        // Si el permiso está concedido, buscar el dispositivo por nombre
         for (BluetoothDevice dispositivo : bluetoothAdapter.getBondedDevices()) {
             if (dispositivo.getName().equals(nombre)) {
                 return dispositivo;
@@ -189,48 +189,41 @@ public class bluetoothConexion extends AppCompatActivity {
         return null;
     }
 
+    // Establece conexión con el dispositivo Bluetooth seleccionado
     private void conectarDispositivo() {
         Toast.makeText(this, "Conectando Espera un Momento", Toast.LENGTH_SHORT).show();
+
         if (dispositivoSeleccionado == null) {
             mostrarToast("Selecciona un dispositivo para conectar.");
             return;
         }
 
-        // Verificar si el permiso está concedido
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            // Solicitar el permiso
-            ActivityCompat.requestPermissions(
-                    this,
-                    new String[]{Manifest.permission.BLUETOOTH_CONNECT},
-                    REQUEST_BLUETOOTH_CONNECT_PERMISSION
-            );
-            return; // Salir del método mientras se espera el permiso
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, REQUEST_BLUETOOTH_CONNECT_PERMISSION);
+            return;
         }
-        // Intentar conectar al dispositivo
+
         try {
             bluetoothSocket = dispositivoSeleccionado.createRfcommSocketToServiceRecord(BT_MODULE_UUID);
-            bluetoothSocket.connect();
-            conexionBluetooth = new ConnectedThread(bluetoothSocket);
-            conexionBluetooth.start();
+            bluetoothSocket.connect(); // Intenta conectar al socket
+            conexionBluetooth = new ConnectedThread(bluetoothSocket); // Crea hilo de comunicación
+            conexionBluetooth.start(); // Inicia la comunicación
             mostrarToast("Conexión exitosa.");
         } catch (IOException e) {
             mostrarToast("Error al conectar: " + e.getMessage());
         }
     }
 
+    // Cierra la conexión Bluetooth y libera recursos
     private void desconectarDispositivo() {
         if (bluetoothSocket != null && bluetoothSocket.isConnected()) {
             try {
-                // Detener la comunicación de Bluetooth
                 if (conexionBluetooth != null) {
-                    conexionBluetooth.cancel(); // Cerrar el hilo de comunicación
+                    conexionBluetooth.cancel(); // Detiene hilo
                     conexionBluetooth = null;
                 }
-
-                // Cerrar el socket de Bluetooth
-                bluetoothSocket.close();
-                bluetoothSocket = null; // Limpiar la referencia del socket
-
+                bluetoothSocket.close(); // Cierra socket
+                bluetoothSocket = null;
                 mostrarToast("Dispositivo desconectado.");
             } catch (IOException e) {
                 mostrarToast("Error al desconectar: " + e.getMessage());
@@ -240,6 +233,7 @@ public class bluetoothConexion extends AppCompatActivity {
         }
     }
 
+    // Envía un carácter al dispositivo Bluetooth
     private void realizarAccionBT(char comando) {
         if (conexionBluetooth != null) {
             conexionBluetooth.enviarComando(comando);
@@ -248,10 +242,12 @@ public class bluetoothConexion extends AppCompatActivity {
         }
     }
 
+    // Muestra mensajes rápidos en pantalla
     private void mostrarToast(String mensaje) {
         Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
     }
 
+    // Hilo que se encarga de la comunicación por Bluetooth
     private class ConnectedThread extends Thread {
         private final OutputStream outputStream;
         private final InputStream inputStream;
@@ -273,18 +269,21 @@ public class bluetoothConexion extends AppCompatActivity {
         public void run() {
             byte[] buffer = new byte[1024];
             int bytes;
+
             while (true) {
                 try {
-                    bytes = inputStream.read(buffer);
+                    bytes = inputStream.read(buffer); // Lee datos
                     String mensaje = new String(buffer, 0, bytes);
+
+                    // Procesa el mensaje recibido
                     if (mensaje.contains("Fuera de rango")) {
                         runOnUiThread(() -> mostrarToast("El ESP32 está fuera de rango."));
-                        if (!mensajeEnviado) { // Solo enviar si no se ha enviado
-                            mensajeEnviado = true; // Marcar como enviado
-                            enviarMensaje();
+                        if (!mensajeEnviado) {
+                            mensajeEnviado = true;
+                            enviarMensaje(); // Envía alerta a contactos
                         }
                     } else if (mensaje.contains("Dentro del rango")) {
-                        if (mensajeEnviado) { // Restablecer el flag cuando vuelva al rango
+                        if (mensajeEnviado) {
                             mensajeEnviado = false;
                         }
                         runOnUiThread(() -> mostrarToast("El ESP32 está dentro del rango."));
@@ -295,7 +294,6 @@ public class bluetoothConexion extends AppCompatActivity {
                 }
             }
         }
-
 
         public void enviarComando(char comando) {
             try {
@@ -313,14 +311,16 @@ public class bluetoothConexion extends AppCompatActivity {
                 mostrarToast("Error al cerrar flujos: " + e.getMessage());
             }
         }
-    }private void enviarMensaje() {
+    }
+
+    // Obtiene los contactos del usuario y luego llama a enviarMensajeAContactos
+    private void enviarMensaje() {
         db.collection("Usuarios")
                 .document(currentUser.getUid())
                 .collection("amigos")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // Limpia las listas de contactos antes de llenarlas
                         contactosCorreos.clear();
                         contactosIds.clear();
 
@@ -332,7 +332,7 @@ public class bluetoothConexion extends AppCompatActivity {
                                 contactosIds.add(idAmigo);
                             }
                         }
-                        // Una vez que los contactos se cargan, envía el mensaje
+
                         if (!contactosCorreos.isEmpty()) {
                             enviarMensajeAContactos();
                         } else {
@@ -345,6 +345,7 @@ public class bluetoothConexion extends AppCompatActivity {
                 });
     }
 
+    // Envía un mensaje de alerta a todos los contactos del usuario
     private void enviarMensajeAContactos() {
         String mensajeTexto = "PRECAUSION ESTE USUARIO FUE HURTADO. ⚠️";
 
@@ -354,7 +355,8 @@ public class bluetoothConexion extends AppCompatActivity {
         }
 
         for (String correoAmigo : contactosCorreos) {
-            Log.d(TAG,"Contactos a enviar mensaje"+ correoAmigo);
+            Log.d(TAG, "Contactos a enviar mensaje: " + correoAmigo);
+
             db.collection("Usuarios").whereEqualTo("Correo Electronico", correoAmigo)
                     .get()
                     .addOnCompleteListener(task -> {
@@ -366,9 +368,8 @@ public class bluetoothConexion extends AppCompatActivity {
                                     .document(amigoId)
                                     .collection("mensajes_recibidos")
                                     .add(mensaje)
-                                    .addOnSuccessListener(documentReference -> {
-                                        Toast.makeText(this, "Mensaje enviado a " + correoAmigo, Toast.LENGTH_SHORT).show();
-                                    })
+                                    .addOnSuccessListener(documentReference ->
+                                            Toast.makeText(this, "Mensaje enviado a " + correoAmigo, Toast.LENGTH_SHORT).show())
                                     .addOnFailureListener(e -> {
                                         Toast.makeText(this, "Error al enviar mensaje a " + correoAmigo, Toast.LENGTH_SHORT).show();
                                         Log.e(TAG, "Error al enviar mensaje", e);
@@ -380,5 +381,6 @@ public class bluetoothConexion extends AppCompatActivity {
         }
     }
 }
+
 
 
