@@ -28,19 +28,30 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+/**
+ * Clase principal de la actividad Home, donde se presentan distintas opciones para el usuario:
+ * acceder al mapa, gestionar contactos de emergencia, conectar a un dispositivo Bluetooth, ver mensajes,
+ * y restaurar la contraseña.
+ */
 public class homeActivity extends AppCompatActivity implements View.OnClickListener {
+
+    // Declaración de botones de la interfaz
     private Button btnmapa, btnrestaurarContrasena;
-    private Button btnConecDIs;
-    private Button btnContact;
-    private ImageButton btnVermensajes;
-    private FirebaseAuth mAuth;
-    private String correoUsuario;
-    private FirebaseFirestore db;
+    private Button btnConecDIs;          // Botón para ir a la conexión Bluetooth
+    private Button btnContact;           // Botón para acceder a contactos de emergencia
+    private ImageButton btnVermensajes;  // Botón para ver mensajes recibidos
+
+    // Variables de Firebase
+    private FirebaseAuth mAuth;          // Autenticación Firebase
+    private String correoUsuario;        // Correo electrónico del usuario (no usado en esta clase actualmente)
+    private FirebaseFirestore db;        // Base de datos Firestore (no usado en esta clase actualmente)
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Activar compatibilidad con pantalla completa y márgenes del sistema
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_home);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -49,60 +60,53 @@ public class homeActivity extends AppCompatActivity implements View.OnClickListe
             return insets;
         });
 
-        //INICIALIZAR BOTON MAPA
+        // Inicializar botones con sus IDs
         btnmapa = findViewById(R.id.btnMapa);
         btnrestaurarContrasena = findViewById(R.id.btnRestaurarContrasena);
-
-        //BUTTON LISTENER
-        btnmapa.setOnClickListener(homeActivity.this);
-        btnrestaurarContrasena.setOnClickListener(this);
-
-
-
-        //BOTON CONEXION DEL DISPOSITIVO BLEUTOOTH
         btnConecDIs = findViewById(R.id.btnConecDIs);
-        btnConecDIs.setOnClickListener(this);
-
-        //BOTON CONEXION DEL CONTACTO EMERGENCIA
         btnContact = findViewById(R.id.btnContact);
-        btnContact.setOnClickListener(this);
-
-        //BOTON CONEXION DEL CONTACTO EMERGENCIA
         btnVermensajes = findViewById(R.id.btnVermensajes);
+
+        // Asignar listeners a los botones
+        btnmapa.setOnClickListener(this);
+        btnrestaurarContrasena.setOnClickListener(this);
+        btnConecDIs.setOnClickListener(this);
+        btnContact.setOnClickListener(this);
         btnVermensajes.setOnClickListener(this);
 
-        //FIREBASE AUTHENTIFICATION
+        // Inicializar autenticación de Firebase
         mAuth = FirebaseAuth.getInstance();
 
-        //GENERAR TOQUEN
-
+        // Generar y registrar token del dispositivo en Firebase (usado para notificaciones)
         Tokens tk = new Tokens(homeActivity.this);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         tk.setToken(user);
-
-
-
     }
 
+    /**
+     * Método que responde a los clics en los distintos botones de la interfaz.
+     * Lanza la actividad correspondiente según el botón presionado.
+     */
     @Override
     public void onClick(View view) {
-        String auth = String.valueOf(mAuth.getCurrentUser());
-        Intent intent = new Intent();
+        Intent intent;
+
+        // Redirigir según el botón presionado
         if (view.getId() == R.id.btnMapa) {
-            intent = new Intent(homeActivity.this, MapsActivity.class);
-            startActivity(intent);
+            intent = new Intent(homeActivity.this, MapsActivity.class); // Ir al mapa
         } else if (view.getId() == R.id.btnRestaurarContrasena) {
-            intent = new Intent(homeActivity.this, restaurarContrasenaActivity.class);
-            startActivity(intent);
+            intent = new Intent(homeActivity.this, restaurarContrasenaActivity.class); // Ir a restaurar contraseña
         } else if (view.getId() == R.id.btnConecDIs) {
-            intent = new Intent(homeActivity.this, bluetoothConexion.class);
-            startActivity(intent);
-        }else if (view.getId() == R.id.btnContact) {
-            intent = new Intent(homeActivity.this, listacontactos.class);
-            startActivity(intent);
-        }else if (view.getId() == R.id.btnVermensajes) {
-            intent = new Intent(homeActivity.this, EnviarMensajeActivity.class);
-            startActivity(intent);
+            intent = new Intent(homeActivity.this, bluetoothConexion.class); // Ir a conexión Bluetooth
+        } else if (view.getId() == R.id.btnContact) {
+            intent = new Intent(homeActivity.this, listacontactos.class); // Ir a contactos
+        } else if (view.getId() == R.id.btnVermensajes) {
+            intent = new Intent(homeActivity.this, EnviarMensajeActivity.class); // Ir a mensajes
+        } else {
+            return; // Si no se reconoce el botón, no hacer nada
         }
+
+        // Iniciar la actividad correspondiente
+        startActivity(intent);
     }
 }
